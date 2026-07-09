@@ -51,7 +51,16 @@ public class MovementService {
                 book.setAvailable(false);
             }
         } else {
+            Movement lastMovement = movementRepository
+                    .findTopByLectorAndBookOrderByTimestampDesc(lector, book)
+                    .orElseThrow(() -> new RuntimeException("No borrowing record found for this lector and book"));
+
+            if (lastMovement.getType() != MovementType.BORROWING) {
+                throw new RuntimeException("Book was not borrowed by this lector");
+            }
+
             book.setAvailableCount(book.getAvailableCount() + 1);
+            book.setAvailable(true);
         }
 
         bookRepository.save(book);

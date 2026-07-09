@@ -1,4 +1,4 @@
-# [Nombre] [Carné]
+# [Gabriel Alejandro Batres Flores] [00103923]
 
 ## Indicaciones
 
@@ -26,6 +26,8 @@ Actualmente:
 
 **Instrucción:** Explique la causa del problema y resuélvalo.
 
+**Respuesta:** El error se debe a que en la entidad Book, genre es de tipo Enum Genre, pero en BookRepository se pide un String.
+
 ---
 
 ### 2. Error al volver a prestar un libro (10%)
@@ -34,6 +36,8 @@ Un usuario reportó que al pedir prestado el libro **The Selfish Gene**, devolve
 
 **Instrucción:** Explique la causa del problema y resuélvalo.
 
+**Respuesta:** El problema se da ya que al hacer return book no se incluye setAvailable(true) y por lo tanto falla al volverlo a pedir.
+
 ---
 
 ### 3. Cantidad de libros por género (10%)
@@ -41,6 +45,8 @@ Un usuario reportó que al pedir prestado el libro **The Selfish Gene**, devolve
 Existe un endpoint que devuelve la cantidad de libros disponibles por género. Sin embargo, actualmente dicho endpoint falla.
 
 **Instrucción:** Explique la causa del problema y resuélvalo.
+
+**Respuesta:** El problema se debe a la incompatibilidad con del uso de Genre y Stringe, para resolverlo se utiliza stream para devolver la lista.
 
 ---
 
@@ -53,6 +59,8 @@ GET /books?id=ed16ed1e-7017-4697-a08a-d28c09a74acf
 ```
 
 **Instrucción:** Explique la causa del problema.
+
+**Respuesta:** El problema es que la peticion esta mal formulada
 
 ---
 
@@ -73,6 +81,8 @@ QA ha reportado que el siguiente payload enviado al endpoint `POST /books` provo
 
 **Instrucción:** Explique la causa del problema.
 
+**Respuesta:** El problema se debe a que en genre, classic esta en minuscula, mientras que debido al enum se solicita que este en mayuscula, esto se soluciona haciendo .toUpperCase() para normalizar las entradas.
+
 ---
 
 ### 6. Devolución de libros no prestados (20%)
@@ -84,5 +94,7 @@ QA ha reportado que un usuario es capaz de devolver libros que nunca ha solicita
 - Confirme si este comportamiento es realmente posible.
 - Si es posible, explique la causa y resuelva el problema.
 - Si no es posible, explique por qué, haciendo referencia al código correspondiente.
+
+**Respuesta:** Esto es posible debido que al devolver el libro no se pide verificacion de si en realidad ese usuario pidio el libro, pudiendo devolver un libro que no ha sido prestado por el. Esto se resuelve verificando que el usuario ha pedido prestado el libro antes.
 
 ---

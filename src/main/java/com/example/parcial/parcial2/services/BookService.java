@@ -7,11 +7,9 @@ import com.example.parcial.parcial2.domain.entities.Genre;
 import com.example.parcial.parcial2.repositories.BookRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -41,11 +39,11 @@ public class BookService {
 
     public List<Book> getAllBooks(String author, String genre) {
         if (author != null && genre != null) {
-            return bookRepository.findByAuthorAndGenre(genre, author);
+            return bookRepository.findByAuthorAndGenre(author, Genre.valueOf(genre.toUpperCase()));
         } else if (author != null) {
             return bookRepository.findByAuthor(author);
         } else if (genre != null) {
-            return bookRepository.findByGenre(Genre.valueOf(genre));
+            return bookRepository.findByGenre(Genre.valueOf(genre.toUpperCase()));
         }
         return bookRepository.findAll();
     }
@@ -72,19 +70,12 @@ public class BookService {
     }
 
     public List<GenreCountDto> getGenresAvailable() {
-        List<Book> books = bookRepository.findAll();
-        Map<String, Long> countByGenre = new HashMap<>();
-
-        for (Book book : books) {
-            String genreName = book.getGenre().name();
-            countByGenre.put(genreName, countByGenre.getOrDefault(genreName, 0L) + 1);
-        }
-
-        List<GenreCountDto> result = new ArrayList<>();
-        for (Map.Entry<String, Long> entry : countByGenre.entrySet()) {
-            result.add(new GenreCountDto(entry.getKey(), entry.getValue()));
-        }
-
-        return result;
+        return bookRepository.findAll().stream()
+                .filter(Book::isAvailable)
+                .filter(b -> b.getGenre() != null)
+                .collect(Collectors.groupingBy(b -> b.getGenre().name(), Collectors.counting()))
+                .entrySet().stream()
+                .map(e -> new GenreCountDto(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
     }
 }
